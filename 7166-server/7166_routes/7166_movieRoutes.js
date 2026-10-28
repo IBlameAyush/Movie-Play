@@ -1,4 +1,4 @@
-
+import { validate, movieSchema, movieUpdateSchema } from "../7166_middleware/7166_validate.js";
 import express from "express";
 import mongoose from "mongoose";
 import Movie from "../7166_models/7166_Movie.js";
@@ -86,7 +86,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // Create movie — admin only
-router.post("/", authenticateUser, requireAdmin, async (req, res) => {
+router.post("/", authenticateUser, requireAdmin, validate(movieSchema), async (req, res) => {
   try {
     const movieData = getMovieFields(req.body);
     const movie = await Movie.create(movieData);
@@ -107,7 +107,7 @@ router.post("/", authenticateUser, requireAdmin, async (req, res) => {
 });
 
 // Update movie — admin only
-router.put("/:id", authenticateUser, requireAdmin, async (req, res) => {
+router.put("/:id", authenticateUser, requireAdmin, validate(movieUpdateSchema, async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
       return res.status(400).json({
@@ -151,7 +151,7 @@ router.put("/:id", authenticateUser, requireAdmin, async (req, res) => {
         : "Unable to update movie",
     });
   }
-});
+}));
 
 // Delete movie — admin only
 router.delete("/:id", authenticateUser, requireAdmin, async (req, res) => {
